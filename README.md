@@ -1,4 +1,13 @@
-# Welcome to your Lovable project
+# api-whisper-insights
+API Lens front end - AI-powered API analytics dashboard
+
+## Features
+
+- **Audio Analytics**: Track OpenAI Whisper API usage with language distribution, processing trends, and use case analysis
+- **Video Analytics**: Monitor GPT-4-Vision frame analysis with resolution distribution and processing types
+- **Media Analytics**: Combined view of all media processing (text, audio, images, video) with cost analysis
+- **Advanced Visualizations**: Heatmaps for usage patterns, scatter plots for performance analysis, and comprehensive cost breakdowns
+- **Real-time Metrics**: Track API costs, latency, error rates, and usage patterns across all your AI API calls
 
 ## Project info
 
@@ -24,16 +33,19 @@ Follow these steps:
 
 ```sh
 # Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+git clone https://github.com/ThousifMd/api-whisper-insights.git
 
 # Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+cd api-whisper-insights
 
 # Step 3: Install the necessary dependencies.
 npm i
 
 # Step 4: Start the development server with auto-reloading and an instant preview.
 npm run dev
+
+# Step 5: Start the mock backend server (in a separate terminal)
+npm run mock-backend
 ```
 
 **Edit a file directly in GitHub**
@@ -59,6 +71,8 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+- Recharts for data visualization
+- Express.js for mock backend
 
 ## How can I deploy this project?
 
