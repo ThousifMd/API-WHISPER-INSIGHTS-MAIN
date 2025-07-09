@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Console Output</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            margin: 0;
+        }
+        .console {
+            background-color: #000;
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 20px;
+            overflow-x: auto;
+        }
+        .loading {
+            color: #569cd6;
+        }
+        .success {
+            color: #4ec9b0;
+        }
+        .error {
+            color: #f44747;
+        }
+        .data {
+            color: #ce9178;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>API Console Output</h1>
+    <div class="console" id="console">
+        <div class="loading">Fetching API data...</div>
+    </div>
+
+    <script>
+        const apiKey = 'als_z2Ad8pQn0jrWqe2tvr6oxwfSpeGV3L14KEyCnVpSl7M';
+        const apiUrl = 'http://localhost:8001/proxy/stats/optimized';
+        const consoleDiv = document.getElementById('console');
+
+        function log(message, className = '') {
+            const div = document.createElement('div');
+            div.className = className;
+            div.textContent = message;
+            consoleDiv.appendChild(div);
+        }
+
+        function clearConsole() {
+            consoleDiv.innerHTML = '';
+        }
+
+        fetch(apiUrl, {
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Accept': 'application/json'
+            },
+            mode: 'cors'
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            clearConsole();
+            
+            log('=== API RESPONSE ===', 'success');
+            log('');
+            log('Summary:', 'success');
+            log(`  Total Requests: ${data.summary.total_requests}`, 'data');
+            log(`  Unique Companies: ${data.summary.unique_companies}`, 'data');
+            log(`  Unique Models: ${data.summary.unique_models}`, 'data');
+            log(`  Total Cost: $${data.summary.total_cost}`, 'data');
+            log(`  Average Latency: ${data.summary.avg_latency}ms`, 'data');
+            log('');
+            
+            log('Breakdown by Company:', 'success');
+            data.breakdown.forEach(item => {
+                log('');
+                log(`  Company: ${item.company_name}`, 'data');
+                log(`  - Vendor: ${item.vendor}`, 'data');
+                log(`  - Model: ${item.model}`, 'data');
+                log(`  - Request Count: ${item.request_count}`, 'data');
+                log(`  - Total Cost: $${item.total_cost}`, 'data');
+                log(`  - Avg Cost: $${item.avg_cost}`, 'data');
+                log(`  - Input Tokens: ${item.total_input_tokens}`, 'data');
+                log(`  - Output Tokens: ${item.total_output_tokens}`, 'data');
+                log(`  - Avg Latency: ${item.avg_latency}ms`, 'data');
+            });
+            
+            log('');
+            log('Raw JSON Response:', 'success');
+            const pre = document.createElement('pre');
+            pre.className = 'data';
+            pre.textContent = JSON.stringify(data, null, 2);
+            consoleDiv.appendChild(pre);
+
+            // Also log to browser console
+            console.log('API Data:', data);
+        })
+        .catch(error => {
+            clearConsole();
+            log('Error fetching data: ' + error.message, 'error');
+            log('', 'error');
+            log('This is likely a CORS issue. The backend API needs to allow cross-origin requests.', 'error');
+            log('', 'error');
+            log('Alternative solutions:', 'success');
+            log('1. Run this command in terminal to see the data:', 'data');
+            log('   node test-api.js', 'data');
+            log('', 'data');
+            log('2. Or use curl:', 'data');
+            log(`   curl -H 'Authorization: Bearer ${apiKey}' '${apiUrl}'`, 'data');
+            console.error('Error:', error);
+        });
+    </script>
+</body>
+</html>
