@@ -341,7 +341,147 @@ export const ChatInterface: React.FC = () => {
           { label: 'Active Vendors', value: '4', trend: '+1', trending: 'up' as const }
         ]
       };
-    } else if (input_lower.includes('audio') || input_lower.includes('transcription') || input_lower.includes('whisper') || input_lower.includes('speech')) {
+    } else if (input_lower.includes('whisper') && input_lower.includes('usage')) {
+      // Specific Whisper API usage analytics
+      const whisperVendorData = [
+        { name: 'OpenAI Whisper', value: 489, percentage: 86.2 },
+        { name: 'Google Speech-to-Text', value: 78, percentage: 13.8 }
+      ];
+
+      const whisperModelData = [
+        { model: 'whisper-1', requests: 423, minutes: 1876.5, cost: 375.30 },
+        { model: 'whisper-large-v2', requests: 66, minutes: 469.2, cost: 93.84 },
+        { model: 'google-speech-v1', requests: 78, minutes: 234.3, cost: 46.86 }
+      ];
+
+      const whisperCostTrends = generateDateRange(7).map((date, index) => ({
+        date,
+        whisper: parseFloat((45 + Math.random() * 20 + Math.sin(index) * 10).toFixed(2)),
+        googleSpeech: parseFloat((8 + Math.random() * 5 + Math.cos(index) * 3).toFixed(2)),
+        total: parseFloat((53 + Math.random() * 25 + Math.sin(index) * 13).toFixed(2))
+      }));
+
+      return {
+        type: 'whisper-usage',
+        charts: [
+          {
+            type: 'donut' as const,
+            title: 'Whisper vs Other Speech APIs',
+            data: whisperVendorData
+          },
+          {
+            type: 'bar' as const,
+            title: 'API Usage by Model',
+            data: whisperModelData
+          },
+          {
+            type: 'line' as const,
+            title: '7-Day Cost Comparison',
+            data: whisperCostTrends
+          }
+        ],
+        metrics: [
+          { label: 'Total Minutes', value: '2,580', trend: '+23%', trending: 'up' as const },
+          { label: 'Whisper Cost', value: '$469.14', trend: '+18%', trending: 'up' as const },
+          { label: 'Cost/Minute', value: '$0.20', trend: '-5%', trending: 'down' as const }
+        ]
+      };
+    } else if (input_lower.includes('transcription') && input_lower.includes('metrics')) {
+      // Audio transcription metrics
+      const accuracyData = [
+        { language: 'English', wer: 4.2, cer: 2.1, accuracy: 95.8 },
+        { language: 'Spanish', wer: 6.8, cer: 3.4, accuracy: 93.2 },
+        { language: 'Mandarin', wer: 8.3, cer: 4.1, accuracy: 91.7 },
+        { language: 'French', wer: 5.9, cer: 2.9, accuracy: 94.1 }
+      ];
+
+      const processingTimeData = [
+        { duration: '0-1 min', avgTime: 2.3, count: 234 },
+        { duration: '1-5 min', avgTime: 8.7, count: 178 },
+        { duration: '5-10 min', avgTime: 18.4, count: 89 },
+        { duration: '10-30 min', avgTime: 45.2, count: 45 },
+        { duration: '30+ min', avgTime: 98.6, count: 21 }
+      ];
+
+      const successRateData = generateDateRange(14).map((date, index) => ({
+        date,
+        successRate: 95 + Math.random() * 4 + Math.sin(index / 2) * 2,
+        failureRate: 5 - Math.random() * 4 - Math.sin(index / 2) * 2
+      }));
+
+      return {
+        type: 'transcription-metrics',
+        charts: [
+          {
+            type: 'bar' as const,
+            title: 'Accuracy Metrics by Language',
+            data: accuracyData
+          },
+          {
+            type: 'column' as const,
+            title: 'Processing Time by Duration',
+            data: processingTimeData
+          },
+          {
+            type: 'area' as const,
+            title: '14-Day Success/Failure Rates',
+            data: successRateData
+          }
+        ],
+        metrics: [
+          { label: 'Avg WER', value: '6.3%', trend: '-0.8%', trending: 'down' as const },
+          { label: 'Success Rate', value: '97.2%', trend: '+1.3%', trending: 'up' as const },
+          { label: 'Avg Process Time', value: '15.4s', trend: '-2.1s', trending: 'down' as const }
+        ]
+      };
+    } else if ((input_lower.includes('speech') || input_lower.includes('audio')) && input_lower.includes('cost')) {
+      // Speech/Audio processing costs
+      const costByDuration = [
+        { range: '0-1 min', totalCost: 45.67, avgCost: 0.195, count: 234 },
+        { range: '1-5 min', totalCost: 134.89, avgCost: 0.757, count: 178 },
+        { range: '5-10 min', totalCost: 156.23, avgCost: 1.755, count: 89 },
+        { range: '10-30 min', totalCost: 89.45, avgCost: 1.988, count: 45 },
+        { range: '30+ min', totalCost: 30.54, avgCost: 1.454, count: 21 }
+      ];
+
+      const costByProvider = [
+        { provider: 'OpenAI', model: 'whisper-1', costPerMinute: 0.20, totalMinutes: 1876.5, totalCost: 375.30 },
+        { provider: 'OpenAI', model: 'whisper-large', costPerMinute: 0.30, totalMinutes: 469.2, totalCost: 140.76 },
+        { provider: 'Google', model: 'speech-v1', costPerMinute: 0.15, totalMinutes: 234.3, totalCost: 35.15 }
+      ];
+
+      const dailyCostTrend = generateDateRange(30).map((date, index) => ({
+        date,
+        cost: parseFloat((12 + Math.random() * 8 + Math.sin(index / 3) * 5).toFixed(2)),
+        minutes: Math.floor(60 + Math.random() * 40 + Math.sin(index / 3) * 20)
+      }));
+
+      return {
+        type: 'speech-costs',
+        charts: [
+          {
+            type: 'bar' as const,
+            title: 'Cost Distribution by Duration',
+            data: costByDuration
+          },
+          {
+            type: 'table' as const,
+            title: 'Provider Cost Comparison',
+            data: costByProvider
+          },
+          {
+            type: 'area' as const,
+            title: '30-Day Cost and Usage Trend',
+            data: dailyCostTrend
+          }
+        ],
+        metrics: [
+          { label: 'Total Cost', value: '$456.78', trend: '+22%', trending: 'up' as const },
+          { label: 'Avg Cost/Min', value: '$0.195', trend: '-$0.02', trending: 'down' as const },
+          { label: 'Peak Day Cost', value: '$24.56', trend: '+$3.45', trending: 'up' as const }
+        ]
+      };
+    } else if (input_lower.includes('audio') || input_lower.includes('transcription') || input_lower.includes('speech')) {
       // Audio processing analytics
       const languageData = [
         { name: 'English', value: 423, percentage: 74.6 },
@@ -752,7 +892,13 @@ export const ChatInterface: React.FC = () => {
       return `Breaking down your costs by vendor and model:\n\n💰 Cost Analysis:\n\nBy Vendor:\n- OpenAI: $3,397.16 (75%)\n- Anthropic: $1,130.92 (25%)\n- Google: $361.89 (8%)\n- Others: $90.48 (2%)\n\nTop Models by Cost:\n1. GPT-4: $2,035.65 (45%)\n2. Claude-3: $1,130.92 (25%)\n3. GPT-3.5-Turbo: $904.73 (20%)\n\nThe visualization below shows detailed cost breakdown with request volumes.`;
     } else if (input.includes('cost') || input.includes('spend')) {
       return `Based on your API usage data, your total cost this month is $${analyticsData.summary.total_cost.toFixed(2)}. The main contributors are GPT-4 ($2,035.65) and Claude-3 ($1,130.92).`;
-    } else if (input.includes('audio') || input.includes('transcription') || input.includes('whisper') || input.includes('speech')) {
+    } else if (input.includes('whisper') && input.includes('usage')) {
+      return `OpenAI Whisper API Usage Analysis:\n\n🎙️ Whisper vs Other Speech APIs:\n\nAPI Distribution:\n- OpenAI Whisper: 489 requests (86.2%)\n- Google Speech-to-Text: 78 requests (13.8%)\n\nModel Breakdown:\n- whisper-1: 423 requests, 1,876.5 minutes processed\n- whisper-large-v2: 66 requests, 469.2 minutes processed\n- google-speech-v1: 78 requests, 234.3 minutes processed\n\nCost Analysis:\n- Whisper Total Cost: $469.14\n- Google Speech Cost: $46.86\n- Total Speech API Cost: $516.00\n\nPerformance:\n- Whisper processes 31.3 minutes per request average\n- Google processes 3.0 minutes per request average\n- Whisper handles longer audio files more efficiently\n\nRecommendations:\n- Use whisper-1 for general transcription (best cost/performance)\n- Reserve whisper-large-v2 for high-accuracy requirements\n- Consider Google Speech for short clips under 1 minute`;
+    } else if (input.includes('transcription') && input.includes('metrics')) {
+      return `Audio Transcription Metrics:\n\n📊 Accuracy Analysis:\n\nWord Error Rate (WER) by Language:\n- English: 4.2% (95.8% accuracy)\n- Spanish: 6.8% (93.2% accuracy)\n- Mandarin: 8.3% (91.7% accuracy)\n- French: 5.9% (94.1% accuracy)\n\nProcessing Performance:\n- 0-1 min audio: 2.3s average processing\n- 1-5 min audio: 8.7s average processing\n- 5-10 min audio: 18.4s average processing\n- 10-30 min audio: 45.2s average processing\n- 30+ min audio: 98.6s average processing\n\nReliability:\n- Overall Success Rate: 97.2%\n- Failure Rate: 2.8% (mostly timeouts)\n- Average Retry Count: 1.2 per failed request\n\nQuality Improvements:\n- WER improved by 0.8% in last 30 days\n- Character Error Rate (CER) averaging 3.1%\n- Punctuation accuracy: 89.4%\n\nThe visualizations below show detailed accuracy and performance trends.`;
+    } else if ((input.includes('speech') || input.includes('audio')) && input.includes('cost')) {
+      return `Speech/Audio Processing Cost Analysis:\n\n💰 Cost Breakdown:\n\nBy Audio Duration:\n- 0-1 min: $45.67 total ($0.195/request avg)\n- 1-5 min: $134.89 total ($0.757/request avg)\n- 5-10 min: $156.23 total ($1.755/request avg)\n- 10-30 min: $89.45 total ($1.988/request avg)\n- 30+ min: $30.54 total ($1.454/request avg)\n\nProvider Comparison:\n┌──────────┬─────────────────┬──────────────┬─────────────┐\n│ Provider │ Model           │ $/Minute     │ Total Cost  │\n├──────────┼─────────────────┼──────────────┼─────────────┤\n│ OpenAI   │ whisper-1       │ $0.20        │ $375.30     │\n│ OpenAI   │ whisper-large   │ $0.30        │ $140.76     │\n│ Google   │ speech-v1       │ $0.15        │ $35.15      │\n└──────────┴─────────────────┴──────────────┴─────────────┘\n\nCost Trends:\n- Monthly Total: $456.78 (+22% MoM)\n- Daily Average: $15.23\n- Peak Day: $24.56 (Wednesday)\n\nCost Optimization Tips:\n- Batch short clips together for processing\n- Use whisper-1 instead of large model when possible\n- Consider Google Speech for clips under 1 minute`;
+    } else if (input.includes('audio') || input.includes('transcription') || input.includes('speech')) {
       return `Audio AI Processing Analytics:\n\n🎙️ Audio/Speech Processing Overview:\n\nTotal Audio Requests: 567\nTotal Minutes Processed: 2,345.67 minutes (39.1 hours)\nAverage Duration: 4.14 minutes per request\n\nVendor Breakdown:\n- OpenAI Whisper: 489 requests (86.2%)\n- Google Speech-to-Text: 78 requests (13.8%)\n\nCost Analysis:\n- Total Audio Processing Cost: $456.78\n- Average Cost per Minute: $0.195\n- Cost per Request: $0.806\n\nLanguage Distribution:\n- English: 423 requests (74.6%)\n- Spanish: 67 requests (11.8%)\n- Mandarin: 34 requests (6.0%)\n- Other: 43 requests (7.6%)\n\nUse Cases:\n- Meeting Transcription: 234 requests\n- Voice Commands: 178 requests\n- Podcast Analysis: 89 requests\n- Customer Support: 66 requests\n\nPerformance Metrics:\n- Average Processing Time: 3.456 seconds per minute of audio\n- Success Rate: 98.4%\n- Word Error Rate (WER): 4.2%\n\nThe visualization below shows audio processing trends and language distribution.`;
     } else if (input.includes('video') || input.includes('visual') || input.includes('frame')) {
       return `Video AI Processing Analytics:\n\n🎬 Video Analysis Overview:\n\nTotal Video Requests: 89\nTotal Minutes Processed: 456.78 minutes (7.6 hours)\nAverage Duration: 5.13 minutes per video\n\nProcessing Breakdown:\n- Frame Extraction + Analysis: 89 videos\n- Audio Track Transcription: 76 videos (85.4%)\n- Full Content Analysis: 45 videos (50.6%)\n\nVendor Usage:\n- OpenAI GPT-4-Vision: 89 requests (frames)\n- OpenAI Whisper: 76 requests (audio tracks)\n\nCost Analysis:\n- Total Video Processing Cost: $234.56\n- Average Cost per Video: $2.64\n- Cost per Minute: $0.513\n\nResolution Distribution:\n- 1920x1080 (Full HD): 56 videos (62.9%)\n- 1280x720 (HD): 23 videos (25.8%)\n- 3840x2160 (4K): 8 videos (9.0%)\n- Other: 2 videos (2.3%)\n\nUse Cases:\n- Content Moderation: 34 videos\n- Educational Analysis: 28 videos\n- Security Monitoring: 18 videos\n- Marketing Insights: 9 videos\n\nPerformance:\n- Average Processing Time: 12.4 seconds per minute\n- Frame Analysis Rate: 5 frames per video average\n- Combined Accuracy: 94.7%\n\nThe charts below show video processing trends and resolution distribution.`;
