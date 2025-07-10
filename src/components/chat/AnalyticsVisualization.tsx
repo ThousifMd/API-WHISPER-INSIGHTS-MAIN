@@ -3,11 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, PieChart, Pie, Cell, AreaChart, Area, ScatterChart, Scatter, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts';
 import { TrendingUp, TrendingDown, Minus, MessageSquare } from 'lucide-react';
+import { WorldMap } from '@/components/charts/WorldMap';
+import { SimpleWorldMap } from '@/components/charts/SimpleWorldMap';
 
 interface AnalyticsData {
   type: string;
   charts?: Array<{
-    type: 'line' | 'bar' | 'table' | 'pie' | 'area' | 'scatter' | 'radar' | 'bubble' | 'stackedBar' | 'horizontalBar' | 'donut' | 'heatmap' | 'column' | 'stackedColumn' | 'combo';
+    type: 'line' | 'bar' | 'table' | 'pie' | 'area' | 'scatter' | 'radar' | 'bubble' | 'stacked-bar' | 'horizontalBar' | 'donut' | 'heatmap' | 'column' | 'stackedColumn' | 'combo' | 'map';
     title: string;
     data: any[];
   }>;
@@ -105,6 +107,14 @@ export const AnalyticsVisualization: React.FC<AnalyticsVisualizationProps> = ({ 
             {chart.type === 'line' && chart.data && chart.data.length > 0 && (
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={chart.data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <defs>
+                    {COLORS.map((color, index) => (
+                      <linearGradient key={`gradient-${index}`} id={`colorGradient${index}`} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor={color} stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor={color} stopOpacity={0.1}/>
+                      </linearGradient>
+                    ))}
+                  </defs>
                   <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
                   <XAxis
                     dataKey="date"
@@ -128,6 +138,12 @@ export const AnalyticsVisualization: React.FC<AnalyticsVisualizationProps> = ({ 
                       }
                       return [value, name];
                     }}
+                    contentStyle={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                      border: '1px solid #E5E7EB',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+                    }}
                   />
                   {/* Dynamically render lines based on data keys */}
                   {Object.keys(chart.data[0] || {})
@@ -138,13 +154,21 @@ export const AnalyticsVisualization: React.FC<AnalyticsVisualizationProps> = ({ 
                         type="monotone"
                         dataKey={key}
                         stroke={COLORS[index % COLORS.length]}
-                        strokeWidth={2}
-                        dot={false}
+                        strokeWidth={3}
+                        dot={{ r: 4, strokeWidth: 2, fill: '#fff' }}
+                        activeDot={{ r: 6, strokeWidth: 0 }}
                         name={key.charAt(0).toUpperCase() + key.slice(1)}
+                        animationBegin={0}
+                        animationDuration={1000}
+                        animationEasing="ease-out"
                       />
                     ))
                   }
-                  <Legend />
+                  <Legend 
+                    iconType="line"
+                    wrapperStyle={{ paddingTop: '20px' }}
+                    formatter={(value) => <span className="text-sm font-medium">{value}</span>}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             )}
@@ -152,6 +176,14 @@ export const AnalyticsVisualization: React.FC<AnalyticsVisualizationProps> = ({ 
             {chart.type === 'bar' && (
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={chart.data}>
+                  <defs>
+                    {COLORS.map((color, index) => (
+                      <linearGradient key={`barGradient-${index}`} id={`barColorGradient${index}`} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor={color} stopOpacity={1}/>
+                        <stop offset="100%" stopColor={color} stopOpacity={0.8}/>
+                      </linearGradient>
+                    ))}
+                  </defs>
                   <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
                   <XAxis
                     dataKey={
@@ -179,6 +211,13 @@ export const AnalyticsVisualization: React.FC<AnalyticsVisualizationProps> = ({ 
                                       value.toLocaleString()) : value,
                       name
                     ]}
+                    contentStyle={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                      border: '1px solid #E5E7EB',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+                    }}
+                    cursor={{ fill: 'rgba(0, 0, 0, 0.05)' }}
                   />
                   {/* Render multiple bars if data has multiple numeric series */}
                   {Object.keys(chart.data[0] || {})
@@ -209,14 +248,21 @@ export const AnalyticsVisualization: React.FC<AnalyticsVisualizationProps> = ({ 
                         <Bar
                           key={key}
                           dataKey={key}
-                          fill={COLORS[index % COLORS.length]}
-                          radius={[4, 4, 0, 0]}
+                          fill={`url(#barColorGradient${index % COLORS.length})`}
+                          radius={[8, 8, 0, 0]}
                           name={key}
+                          animationBegin={0}
+                          animationDuration={800}
+                          animationEasing="ease-out"
                         />
                       );
                     })
                   }
-                  <Legend />
+                  <Legend 
+                    iconType="rect"
+                    wrapperStyle={{ paddingTop: '20px' }}
+                    formatter={(value) => <span className="text-sm font-medium">{value}</span>}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             )}
@@ -229,18 +275,60 @@ export const AnalyticsVisualization: React.FC<AnalyticsVisualizationProps> = ({ 
                     data={chart.data}
                     cx="50%"
                     cy="50%"
+                    label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
+                      if (percent < 0.05) return null;
+                      const RADIAN = Math.PI / 180;
+                      const radius = innerRadius + (outerRadius - innerRadius) * 0.7;
+                      const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                      const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                      
+                      return (
+                        <text 
+                          x={x} 
+                          y={y} 
+                          fill="white" 
+                          textAnchor="middle" 
+                          dominantBaseline="middle"
+                          className="font-bold text-xs"
+                          style={{ pointerEvents: 'none' }}
+                        >
+                          {`${(percent * 100).toFixed(0)}%`}
+                        </text>
+                      );
+                    }}
                     labelLine={false}
-                    label={({ name, percentage }) => `${name}: ${percentage}%`}
                     outerRadius={80}
                     fill="#8884d8"
                     dataKey="value"
+                    animationBegin={0}
+                    animationDuration={800}
+                    animationEasing="ease-out"
                   >
                     {chart.data.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={COLORS[index % COLORS.length]}
+                        style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }}
+                      />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(value: any) => `$${value.toFixed(2)}`} />
-                  <Legend />
+                  <Tooltip 
+                    formatter={(value: any, name: string) => [
+                      typeof value === 'number' && name.toLowerCase().includes('cost') ? `$${value.toFixed(2)}` : value,
+                      name
+                    ]}
+                    contentStyle={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                      border: '1px solid #E5E7EB',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+                    }}
+                  />
+                  <Legend 
+                    wrapperStyle={{ paddingTop: '20px' }}
+                    iconType="circle"
+                    formatter={(value) => <span className="text-sm font-medium">{value}</span>}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             )}
@@ -253,19 +341,58 @@ export const AnalyticsVisualization: React.FC<AnalyticsVisualizationProps> = ({ 
                     data={chart.data}
                     cx="50%"
                     cy="50%"
+                    label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
+                      if (percent < 0.05) return null;
+                      const RADIAN = Math.PI / 180;
+                      const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+                      const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                      const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                      
+                      return (
+                        <text 
+                          x={x} 
+                          y={y} 
+                          fill="white" 
+                          textAnchor="middle" 
+                          dominantBaseline="middle"
+                          className="font-bold text-xs"
+                          style={{ pointerEvents: 'none' }}
+                        >
+                          {`${(percent * 100).toFixed(0)}%`}
+                        </text>
+                      );
+                    }}
                     labelLine={false}
-                    label={({ name, percentage }) => `${name}: ${percentage}%`}
                     outerRadius={80}
                     innerRadius={40}
                     fill="#8884d8"
                     dataKey="value"
+                    animationBegin={0}
+                    animationDuration={800}
+                    animationEasing="ease-out"
                   >
                     {chart.data.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={COLORS[index % COLORS.length]}
+                        style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }}
+                      />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(value: any) => `$${value.toFixed(2)}`} />
-                  <Legend />
+                  <Tooltip 
+                    formatter={(value: any) => `$${value.toFixed(2)}`}
+                    contentStyle={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                      border: '1px solid #E5E7EB',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+                    }}
+                  />
+                  <Legend 
+                    wrapperStyle={{ paddingTop: '20px' }}
+                    iconType="circle"
+                    formatter={(value) => <span className="text-sm font-medium">{value}</span>}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             )}
@@ -274,6 +401,14 @@ export const AnalyticsVisualization: React.FC<AnalyticsVisualizationProps> = ({ 
             {chart.type === 'area' && (
               <ResponsiveContainer width="100%" height={300}>
                 <AreaChart data={chart.data}>
+                  <defs>
+                    {COLORS.map((color, index) => (
+                      <linearGradient key={`areaGradient-${index}`} id={`areaColorGradient${index}`} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor={color} stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor={color} stopOpacity={0.1}/>
+                      </linearGradient>
+                    ))}
+                  </defs>
                   <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
                   <XAxis
                     dataKey="date"
@@ -293,6 +428,12 @@ export const AnalyticsVisualization: React.FC<AnalyticsVisualizationProps> = ({ 
                       }
                       return [value.toLocaleString(), name];
                     }}
+                    contentStyle={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                      border: '1px solid #E5E7EB',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+                    }}
                   />
                   {Object.keys(chart.data[0] || {})
                     .filter(key => key !== 'date')
@@ -302,13 +443,21 @@ export const AnalyticsVisualization: React.FC<AnalyticsVisualizationProps> = ({ 
                         type="monotone"
                         dataKey={key}
                         stroke={COLORS[index % COLORS.length]}
-                        fill={COLORS[index % COLORS.length]}
-                        fillOpacity={0.6}
+                        strokeWidth={2}
+                        fill={`url(#areaColorGradient${index % COLORS.length})`}
+                        fillOpacity={0.8}
                         stackId="1"
+                        animationBegin={0}
+                        animationDuration={1000}
+                        animationEasing="ease-out"
                       />
                     ))
                   }
-                  <Legend />
+                  <Legend 
+                    iconType="rect"
+                    wrapperStyle={{ paddingTop: '20px' }}
+                    formatter={(value) => <span className="text-sm font-medium">{value}</span>}
+                  />
                 </AreaChart>
               </ResponsiveContainer>
             )}
@@ -354,9 +503,16 @@ export const AnalyticsVisualization: React.FC<AnalyticsVisualizationProps> = ({ 
                   <Scatter
                     data={chart.data}
                     fill={COLORS[0]}
+                    animationBegin={0}
+                    animationDuration={800}
+                    animationEasing="ease-out"
                   >
                     {chart.data.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={COLORS[index % COLORS.length]}
+                        style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }}
+                      />
                     ))}
                   </Scatter>
                 </ScatterChart>
@@ -378,13 +534,27 @@ export const AnalyticsVisualization: React.FC<AnalyticsVisualizationProps> = ({ 
                         name={key}
                         dataKey={key}
                         stroke={COLORS[index % COLORS.length]}
+                        strokeWidth={2}
                         fill={COLORS[index % COLORS.length]}
                         fillOpacity={0.3}
+                        animationBegin={0}
+                        animationDuration={1000}
+                        animationEasing="ease-out"
                       />
                     ))
                   }
-                  <Tooltip />
-                  <Legend />
+                  <Tooltip 
+                    contentStyle={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                      border: '1px solid #E5E7EB',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+                    }}
+                  />
+                  <Legend 
+                    wrapperStyle={{ paddingTop: '20px' }}
+                    formatter={(value) => <span className="text-sm font-medium">{value}</span>}
+                  />
                 </RadarChart>
               </ResponsiveContainer>
             )}
@@ -430,6 +600,9 @@ export const AnalyticsVisualization: React.FC<AnalyticsVisualizationProps> = ({ 
                   <Scatter
                     data={chart.data}
                     fill={COLORS[0]}
+                    animationBegin={0}
+                    animationDuration={1000}
+                    animationEasing="ease-out"
                     shape={(props: any) => {
                       const { cx, cy, payload, index } = props;
                       // Find min and max z values (bubble sizes) for normalization
@@ -599,8 +772,50 @@ export const AnalyticsVisualization: React.FC<AnalyticsVisualizationProps> = ({ 
                         key={key}
                         dataKey={key}
                         fill={COLORS[index % COLORS.length]}
-                        radius={[4, 4, 0, 0]}
+                        radius={[8, 8, 0, 0]}
                         name={key.charAt(0).toUpperCase() + key.slice(1)}
+                        animationBegin={0}
+                        animationDuration={800}
+                        animationEasing="ease-out"
+                      />
+                    ))
+                  }
+                  <Legend />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+
+            {/* Stacked Bar Chart */}
+            {chart.type === 'stacked-bar' && (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={chart.data}>
+                  <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+                  <XAxis
+                    dataKey={Object.keys(chart.data[0] || {}).find(key => key === 'department' || key === 'name' || key === 'category') || Object.keys(chart.data[0] || {})[0]}
+                    tick={{ fontSize: 12 }}
+                  />
+                  <YAxis tick={{ fontSize: 12 }} />
+                  <Tooltip 
+                    contentStyle={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                      border: '1px solid #E5E7EB',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+                    }}
+                  />
+                  {Object.keys(chart.data[0] || {})
+                    .filter(key => typeof chart.data[0][key] === 'number')
+                    .map((key, index) => (
+                      <Bar
+                        key={key}
+                        dataKey={key}
+                        stackId="a"
+                        fill={COLORS[index % COLORS.length]}
+                        name={key.charAt(0).toUpperCase() + key.slice(1)}
+                        animationBegin={0}
+                        animationDuration={800}
+                        animationEasing="ease-out"
+                        radius={[4, 4, 0, 0]}
                       />
                     ))
                   }
@@ -630,6 +845,10 @@ export const AnalyticsVisualization: React.FC<AnalyticsVisualizationProps> = ({ 
                         dataKey={key}
                         stackId="a"
                         fill={COLORS[index % COLORS.length]}
+                        animationBegin={0}
+                        animationDuration={800}
+                        animationEasing="ease-out"
+                        radius={[4, 4, 0, 0]}
                       />
                     ))
                   }
@@ -663,6 +882,11 @@ export const AnalyticsVisualization: React.FC<AnalyticsVisualizationProps> = ({ 
               </ResponsiveContainer>
             )}
 
+
+            {/* Map Chart - D3.js World Map */}
+            {chart.type === 'map' && (
+              <WorldMap data={chart.data} />
+            )}
 
             {chart.type === 'table' && (
               <div className="overflow-x-auto">

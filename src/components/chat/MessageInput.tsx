@@ -30,9 +30,9 @@ export const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, disab
     "What's my total API spend this month vs last month?",
     "Which models have the highest latency?",
     "Show me cost breakdown by vendor and model",
-    "What are the top 5 most expensive API endpoints?",
-    "How are my API errors distributed?",
-    "What's my usage pattern throughout the day?"
+    "What's my usage pattern throughout the day?",
+    "Show me the top 5 most expensive API endpoints",
+    "How are errors distributed across my API calls?"
   ];
 
   return (
