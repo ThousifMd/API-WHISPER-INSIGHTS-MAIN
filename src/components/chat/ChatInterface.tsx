@@ -9,6 +9,14 @@ import { SystemAlert } from './SystemAlert';
 import { UserContextPanel } from './UserContextPanel';
 import { useToast } from '@/hooks/use-toast';
 import { apiClient, AnalyticsData } from '@/lib/api-client';
+import { 
+  transformToGeographicData, 
+  transformToPowerUsers, 
+  transformToModelUsage, 
+  transformToVendorBreakdown,
+  generateMetrics,
+  generateTimeSeriesData 
+} from '@/lib/data-transformer';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { User, LogOut, ChevronDown } from 'lucide-react';
@@ -134,8 +142,8 @@ export const ChatInterface: React.FC = () => {
     setIsTyping(true);
 
     // Simulate AI response with analytics data
-    setTimeout(() => {
-      const analyticsData = shouldIncludeAnalytics(content) ? generateAnalyticsData(content) : undefined;
+    setTimeout(async () => {
+      const analyticsData = shouldIncludeAnalytics(content) ? await generateAnalyticsData(content) : undefined;
       console.log('Generated analytics data:', analyticsData);
       
       const aiResponse: Message = {
@@ -156,8 +164,17 @@ export const ChatInterface: React.FC = () => {
     return keywords.some(keyword => input.toLowerCase().includes(keyword));
   };
 
-  const generateAnalyticsData = (input: string) => {
+  const generateAnalyticsData = async (input: string) => {
     const input_lower = input.toLowerCase();
+    
+    // Fetch real data from backend
+    let backendData: AnalyticsData | null = null;
+    try {
+      backendData = await apiClient.getAnalytics();
+    } catch (error) {
+      console.error('Failed to fetch backend data:', error);
+      // Fall back to mock data if backend is not available
+    }
 
     // Generate date range for the last 30 days
     const generateDateRange = (days: number) => {
