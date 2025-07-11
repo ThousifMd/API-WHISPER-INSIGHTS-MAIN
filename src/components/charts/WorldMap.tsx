@@ -149,7 +149,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({ data }) => {
   const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
   return (
-    <div className="w-full h-[400px] bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 overflow-hidden relative">
+    <div className="w-full h-[300px] sm:h-[400px] bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 rounded-lg p-2 sm:p-4 border border-gray-200 dark:border-gray-700 overflow-hidden relative">
       <style jsx>{`
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(-10px); }

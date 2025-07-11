@@ -19,7 +19,7 @@ import {
 } from '@/lib/data-transformer';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { User, LogOut, ChevronDown } from 'lucide-react';
+import { User, LogOut, ChevronDown, Menu, X } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -53,6 +53,7 @@ export const ChatInterface: React.FC = () => {
   const [systemAlert, setSystemAlert] = useState<{ message: string; type: 'info' | 'warning' | 'error' } | null>(null);
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [currentUser] = useState({
     name: 'John Doe',
     email: 'john.doe@techcorp.com',
@@ -1521,7 +1522,7 @@ export const ChatInterface: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-background to-secondary/20">
+    <div className="flex h-screen bg-gradient-to-br from-background to-secondary/20 relative">
       {/* System Alert */}
       {systemAlert && (
         <SystemAlert
@@ -1531,23 +1532,59 @@ export const ChatInterface: React.FC = () => {
         />
       )}
 
-      {/* User Context Panel */}
-      <UserContextPanel
-        currentUserId={currentUserId}
-        onUserIdChange={setCurrentUserId}
-        analyticsData={analyticsData}
-      />
+      {/* User Context Panel - Hidden on mobile */}
+      <div className="hidden lg:block">
+        <UserContextPanel
+          currentUserId={currentUserId}
+          onUserIdChange={setCurrentUserId}
+          analyticsData={analyticsData}
+        />
+      </div>
+
+      {/* Mobile Overlay for User Context Panel */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setIsMobileMenuOpen(false)} />
+          <div className="absolute left-0 top-0 h-full w-80 max-w-[85vw] bg-background shadow-xl">
+            <div className="flex items-center justify-between p-4 border-b">
+              <h2 className="font-semibold">Analytics Panel</h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+            <div className="overflow-y-auto h-[calc(100%-60px)]">
+              <UserContextPanel
+                currentUserId={currentUserId}
+                onUserIdChange={setCurrentUserId}
+                analyticsData={analyticsData}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col w-full">
         {/* Header */}
-        <div className="border-b bg-background/95 backdrop-blur-sm px-6 py-4">
+        <div className="border-b bg-background/95 backdrop-blur-sm px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">ApiLens AI</h1>
-              <p className="text-sm text-muted-foreground">AI API Analyst tracking 10M+ API calls per day</p>
+            <div className="flex items-center gap-3">
+              {/* Mobile Menu Button */}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="lg:hidden p-2"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              >
+                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
+              <h1 className="text-xl sm:text-2xl font-bold text-foreground">ApiLens AI</h1>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                 <span className="text-sm text-muted-foreground">Live</span>
@@ -1556,13 +1593,13 @@ export const ChatInterface: React.FC = () => {
               {/* User Profile Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-9 px-2">
-                    <Avatar className="h-8 w-8 mr-2">
+                  <Button variant="ghost" className="relative h-9 px-1 sm:px-2">
+                    <Avatar className="h-8 w-8 sm:mr-2">
                       <AvatarFallback className="bg-primary text-primary-foreground text-sm">
                         {currentUser.name.split(' ').map(n => n[0]).join('')}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="flex items-center gap-2">
+                    <div className="hidden sm:flex items-center gap-2">
                       <div className="text-left">
                         <p className="text-sm font-medium leading-none">{currentUser.name}</p>
                         <p className="text-xs text-muted-foreground">{currentUser.role}</p>
@@ -1603,7 +1640,7 @@ export const ChatInterface: React.FC = () => {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+        <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-4">
           {messages.map((message) => (
             <ChatMessage key={message.id} message={message} />
           ))}

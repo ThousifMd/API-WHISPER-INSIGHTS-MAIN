@@ -1,0 +1,55 @@
+/* Hide scrollbar for mobile quick prompts */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
+}
+
+/* Make charts more touch-friendly on mobile */
+@media (max-width: 640px) {
+  /* Smaller font sizes for chart labels */
+  .recharts-text {
+    font-size: 10px !important;
+  }
+  
+  /* Adjust chart margins */
+  .recharts-wrapper {
+    margin: 0 -10px;
+  }
+  
+  /* Better touch targets for legend items */
+  .recharts-legend-item {
+    padding: 4px 8px;
+  }
+}
+
+/* Improve mobile menu animation */
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.mobile-menu-enter {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Responsive table scrolling */
+.table-responsive {
+  -webkit-overflow-scrolling: touch;
+  overflow-x: auto;
+}
+
+/* Better mobile card spacing */
+@media (max-width: 640px) {
+  .card-mobile-spacing {
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+  }
+}

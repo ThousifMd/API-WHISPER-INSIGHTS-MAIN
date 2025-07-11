@@ -36,16 +36,16 @@ export const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, disab
   ];
 
   return (
-    <div className="border-t bg-background/95 backdrop-blur-sm p-4 space-y-3">
+    <div className="border-t bg-background/95 backdrop-blur-sm p-3 sm:p-4 space-y-2 sm:space-y-3">
       {/* Quick Prompts */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-1 sm:gap-2">
         {quickPrompts.map((prompt, index) => (
           <Button
             key={index}
             variant="outline"
             size="sm"
             onClick={() => setMessage(prompt)}
-            className="text-xs"
+            className="text-xs whitespace-nowrap"
             disabled={disabled}
           >
             {prompt}

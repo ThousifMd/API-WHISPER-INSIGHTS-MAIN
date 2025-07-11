@@ -63,7 +63,7 @@ export const AnalyticsVisualization: React.FC<AnalyticsVisualizationProps> = ({ 
     <div className="space-y-4">
       {/* Metrics Cards */}
       {data.metrics && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {data.metrics.map((metric, index) => (
             <Card key={index} className="bg-background/95 backdrop-blur-sm">
               <CardContent className="p-4">
